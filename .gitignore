@@ -1,0 +1,6 @@
+node_modules
+.DS_Store
+KoLmafia
+/scripts/
+/relay/
+node_modules
