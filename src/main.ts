@@ -1,6 +1,5 @@
 import {
   Effect,
-  haveEffect,
   print,
   sessionLogs,
   toEffect,
@@ -68,12 +67,7 @@ export function main(): void {
     }
   }
 
-  const freeEffects = $effects`
-      Empathy,
-      Leash of Linguini,
-      Smooth Movements,
-      Silent Running
-    `;
+  const freeEffects = $effects`Empathy, Leash of Linguini, Smooth Movements, Silent Running, Nearly All-Natural, Apriling Band Celebration Bop, Bow-Legged Swagger, Jackasses' Symphony of Destruction, Rage of the Reindeer, Amazing, Antiantifrozen, Elemental Saucesphere, Misty Form, Feeling Peaceful, Astral Shell, Feeling Excited, The Moxious Madrigal, Penne Fedora, Blubbered Up, Disco State of Mind, Mariachi Mood, Gummiheart, Bastille Budgeteer, Disco over Matter, Strength of the Tortoise, Macaroni Coating, Power Ballad of the Arrowsmith, Disdain of the War Snapper, Seal Clubbing Frenzy, Patience of the Tortoise, The Magical Mojomuscular Melody, Disdain of She-Who-Was, Pasta Oneness, Saucemastery, Scowl of the Auk, Ready to Survive, Tenacity of the Snapper, Blessing of the Bird`;
 
   const cuts = suggestCuts(results);
   for (const test of relevantTests) {
@@ -217,14 +211,5 @@ function suggestEffectCuts(
     for (const [name, value] of selected) {
       print(`Suggest cutting effect "${name}" (${Math.abs(value)}) for ${statName}.`);
     }
-  }
-}
-
-function isContributionCuttable(statName: string, value: number): boolean {
-  // Combat Rate contributions are negative, others positive
-  if (statName === "Combat Rate") {
-    return value < 0;
-  } else {
-    return value > 0;
   }
 }
