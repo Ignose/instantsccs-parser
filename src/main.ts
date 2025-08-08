@@ -1,16 +1,11 @@
-import {
-  Effect,
-  print,
-  sessionLogs,
-  toEffect,
-} from "kolmafia";
+import { Effect, print, sessionLogs, toEffect } from "kolmafia";
 import { $effect, $effects, sinceKolmafiaRevision } from "libram";
 
-  type TestResult = {
-    finalMetric: number;
-    turns: number;
-    predicted: number;
-  };
+type TestResult = {
+  finalMetric: number;
+  turns: number;
+  predicted: number;
+};
 
 export function main(): void {
   sinceKolmafiaRevision(27822);
@@ -67,7 +62,7 @@ export function main(): void {
     }
   }
 
-  const freeEffects = $effects`In The Depths, The Sonata of Sneakiness, Empathy, Leash of Linguini, Smooth Movements, Silent Running, Nearly All-Natural, Apriling Band Celebration Bop, Bow-Legged Swagger, Jackasses' Symphony of Destruction, Rage of the Reindeer, Amazing, Antiantifrozen, Elemental Saucesphere, Misty Form, Feeling Peaceful, Astral Shell, Feeling Excited, The Moxious Madrigal, Penne Fedora, Blubbered Up, Disco State of Mind, Mariachi Mood, Gummiheart, Bastille Budgeteer, Disco over Matter, Strength of the Tortoise, Macaroni Coating, Power Ballad of the Arrowsmith, Disdain of the War Snapper, Seal Clubbing Frenzy, Patience of the Tortoise, The Magical Mojomuscular Melody, Disdain of She-Who-Was, Pasta Oneness, Saucemastery, Scowl of the Auk, Ready to Survive, Tenacity of the Snapper, Blessing of the Bird`;
+  const freeEffects = $effects`In the Depths, The Sonata of Sneakiness, Empathy, Leash of Linguini, Smooth Movements, Silent Running, Nearly All-Natural, Apriling Band Celebration Bop, Bow-Legged Swagger, Jackasses' Symphony of Destruction, Rage of the Reindeer, Amazing, Antiantifrozen, Elemental Saucesphere, Misty Form, Feeling Peaceful, Astral Shell, Feeling Excited, The Moxious Madrigal, Penne Fedora, Blubbered Up, Disco State of Mind, Mariachi Mood, Gummiheart, Bastille Budgeteer, Disco over Matter, Strength of the Tortoise, Macaroni Coating, Power Ballad of the Arrowsmith, Disdain of the War Snapper, Seal Clubbing Frenzy, Patience of the Tortoise, The Magical Mojomuscular Melody, Disdain of She-Who-Was, Pasta Oneness, Saucemastery, Scowl of the Auk, Ready to Survive, Tenacity of the Snapper, Blessing of the Bird`;
 
   const cuts = suggestCuts(results);
   for (const test of relevantTests) {
@@ -76,19 +71,22 @@ export function main(): void {
       print(`You can probably cut ${cut.toFixed(1)} ${test}.`);
 
       // Only run for effect-based stats like Familiar Weight or Combat Rate
-      const effectContribLines = lines.filter((line) => line.includes(`[${test}]`));
+      const effectContribLines = lines.filter((line) =>
+        line.includes(`[${test}]`)
+      );
       suggestEffectCuts(effectContribLines, test, cut, freeEffects);
     }
   }
 }
 
-
-function suggestCuts(results: { [key: string]: TestResult }): { [key: string]: number } {
+function suggestCuts(results: { [key: string]: TestResult }): {
+  [key: string]: number;
+} {
   const savingsRate: { [key: string]: number } = {
-    "HP": 30,
-    "Muscle": 30,
-    "Mysticality": 30,
-    "Moxie": 30,
+    HP: 30,
+    Muscle: 30,
+    Mysticality: 30,
+    Moxie: 30,
     "Familiar Weight": 5,
     "Weapon Damage": 50,
     "Spell Damage": 50,
@@ -146,9 +144,14 @@ function extractTest(
   return false;
 }
 
-function parseEffectContributions(lines: string[], statName: string): Record<string, number> {
+function parseEffectContributions(
+  lines: string[],
+  statName: string
+): Record<string, number> {
   const contributions: Record<string, number> = {};
-  const linePattern = new RegExp(`^> \\[${statName}\\] (.+?) \\(([-\\d.]+)\\)$`);
+  const linePattern = new RegExp(
+    `^> \\[${statName}\\] (.+?) \\(([-\\d.]+)\\)$`
+  );
 
   for (const line of lines) {
     const match = line.match(linePattern);
@@ -209,7 +212,9 @@ function suggestEffectCuts(
     print(`No non-free effects found to cut for ${statName}.`);
   } else {
     for (const [name, value] of selected) {
-      print(`Suggest cutting effect "${name}" (${Math.abs(value)}) for ${statName}.`);
+      print(
+        `Suggest cutting effect "${name}" (${Math.abs(value)}) for ${statName}.`
+      );
     }
   }
 }
