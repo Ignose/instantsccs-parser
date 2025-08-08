@@ -13,6 +13,9 @@ module.exports = function (api) {
 
   return {
     exclude: [],
-    presets: ["@babel/preset-typescript", ["@babel/preset-env", presetEnvConfig]],
+    presets: [
+      "@babel/preset-typescript",
+      ["@babel/preset-env", presetEnvConfig],
+    ],
   };
-}
+};
