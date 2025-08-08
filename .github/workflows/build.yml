@@ -1,77 +1,55 @@
-name: Build instantsccs-parser
+name: Build & Lint
 
 on:
   push:
     branches: [main]
-    paths:
-      - "src/**"
-      - "package.json"
   pull_request:
     branches: [main]
-    paths:
-      - "src/**"
-      - "package.json"
   workflow_dispatch:
 
 env:
-  # Default version of Node.js for jobs
-  node-version: "18"
+  node-version: "20"
+  path: "KoLmafia" # The directory where your assets are generated, should match build.mjs
 
 jobs:
-  build-push:
+  lint:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
     steps:
-      # Checkout source code
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      # Setup Nodejs
+      - uses: actions/checkout@v4
+      - run: corepack enable
       - name: Use Node.js ${{ env.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.node-version }}
-          cache: "npm"
+      - name: Install Dependencies
+        run: yarn install --immutable
+      - name: ESLint & Prettier
+        run: yarn run lint
 
-      # Setup Yarn
-      - name: Install yarn
-        run: npm install -g yarn
+  push:
+    runs-on: ubuntu-latest
+    needs: [lint]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - name: Use Node.js ${{ env.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.node-version }}
 
-      # Install dependencies
-      - name: Install build dependencies
-        run: yarn install
+      - name: Install Dependencies
+        run: yarn install --immutable
 
-      # Build script
-      - run: |
-          yarn build
-          mkdir BUILD
-          cp -r KoLmafia/scripts BUILD/scripts
-          cp -r KoLmafia/dependencies.txt BUILD/dependencies.txt
-          cp -r README.md BUILD/README.md
+      - name: Build
+        run: yarn build
 
-      # Synchronise & push BUILD directory to release branch
-      - name: Configure Git information
-        run: |
-          git config --global user.name "Build Script"
-          git config --global user.email "<>"
-
-      - name: Synchronize & push into release branch
-        run: |
-          git fetch --all
-          echo "Switching into release"
-          git stash && git stash clear
-          git switch release
-
-          # Push build into the release branch
-          shopt -s extglob
-          rm -rf !(BUILD)
-          mv BUILD/scripts scripts
-          mv BUILD/dependencies.txt dependencies.txt
-          mv BUILD/README.md README.md
-          rm -rf BUILD
-          git add scripts
-          git add dependencies.txt
-          git add README.md
-          git commit -m "Automated build"
-          git push -f origin release
+      - name: Push to Release
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: release
+          FOLDER: ${{ env.path }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MESSAGE: "Build: ({sha}) {msg}"
+          SKIP_EMPTY_COMMITS: true
